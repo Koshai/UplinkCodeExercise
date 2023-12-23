@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java IDE</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/codemirror.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.63.0/mode/clike/clike.js"></script>
+    <style>
+        pre {
+            white-space: pre-wrap;
+        }
+
+        .highlight {
+            background-color: black;
+            color: white;
+            font-weight: strong;
+            font-size: 110%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="section">
+                <h5 class="center-align" style="font-weight: bold;">XPath Brainteaser</h5>
+            </div>
+        </div>
+        <div class="row">
+            <textarea id="code"></textarea>
+            <button onclick="runCode()">Run Code</button>
+            <div id="output"></div>
+        </div>
+    </div>
+    <script>
+        $(".dropdown-trigger").dropdown();
+
+        // Initialize CodeMirror
+        var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+            lineNumbers: true,
+            mode: "text/x-java",
+            theme: "darcula" // You can choose a different theme
+        });
+
+        // Function to run Java code
+        function runCode() {
+            var code = editor.getValue();
+
+            // JDoodle API endpoint
+            var apiUrl = "https://api.jdoodle.com/v1/execute";
+            
+            fetch(apiUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    script: code,
+                    language: "java",
+                    versionIndex: "3", // Java version (adjust as needed)
+                    clientId: "583fe07dd5ab62373b869756126e91f3",
+                    clientSecret: "66816810bc6cd4f9ec352b5e1df0675f4d0714952984be90fe5dc8844d84f3fc"
+                }),
+            })
+            .then(response => response.json())
+            .then(data => displayOutput(data.output))
+            .catch(error => displayOutput("Error: " + error.message));
+        }
+
+        function displayOutput(output) {
+            var outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = "<b>Output:</b><br>" + output;
+        }
+    </script>
+</body>
+
+</html>
